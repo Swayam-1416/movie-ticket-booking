@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Choose seats · {{ show.movie.title }} · Cinepass{% endblock %}
+{% block head %}<script defer src="{% static 'js/seats.js' %}"></script>{% endblock %}
+{% block content %}
+<section class="wrap booking-flow" data-seat-booking data-hold-url="{% url 'booking:hold_seats' show.id %}" data-payment-url="{% url 'booking:payment' show.id %}" data-price-standard="{{ show.standard_price }}" data-price-premium="{{ show.premium_price }}">
+  <form class="csrf-helper" aria-hidden="true">{% csrf_token %}</form>
+  <a class="back-link" href="{% url 'booking:theatres' show.movie.slug %}">← <span>Showtimes</span></a>
+  <div class="compact-show"><div><p class="eyebrow">{{ show.movie.title|upper }}</p><h1>Pick your <span class="serif-accent">seats.</span></h1></div><div class="compact-show-info"><strong>{{ show.starts_at|date:"D, d M · g:i A" }}</strong><span>{{ show.screen.theatre.name }} · {{ show.screen.name }}</span></div></div>
+  <div class="stepper"><span class="step done"><b>1</b> Movie</span><i></i><span class="step done"><b>2</b> Showtime</span><i></i><span class="step active"><b>3</b> Seats</span><i></i><span class="step"><b>4</b> Payment</span></div>
+  <div class="seat-layout-card">
+    <div class="seat-legend"><span><i class="legend-seat"></i> Available</span><span><i class="legend-seat selected"></i> Selected</span><span><i class="legend-seat unavailable"></i> Taken</span></div>
+    <div class="screen-visual"><div class="screen-glow"></div><span>SCREEN</span></div>
+    <div class="seat-map" aria-label="Seat selection">
+      {% for row_label, seats in rows %}<div class="seat-row"><span class="row-label">{{ row_label }}</span><div class="seat-group">{% for item in seats %}<button type="button" class="seat seat-{{ item.seat.seat_type }} state-{{ item.state }}" data-seat-id="{{ item.seat.id }}" data-seat-label="{{ item.seat.label }}" data-seat-type="{{ item.seat.seat_type }}" data-price="{{ item.price }}" {% if item.state == "mine" %}data-expires-at="{{ item.expires_at|date:'c' }}"{% endif %} {% if item.state == "held" or item.state == "booked" %}disabled{% endif %} aria-label="Seat {{ item.seat.label }}{% if item.state == 'booked' %}, booked{% elif item.state == 'held' %}, temporarily held{% elif item.state == 'mine' %}, yours{% else %}, available{% endif %}" title="{{ item.seat.label }} · ₹{{ item.price|floatformat:0 }}">{{ item.seat.seat_number }}</button>{% if item.seat.seat_number == 5 %}<span class="aisle"></span>{% endif %}{% endfor %}</div><span class="row-label">{{ row_label }}</span></div>{% endfor %}
+    </div>
+    <p class="seat-help">Rows G &amp; H are premium · Select up to 10 seats</p>
+  </div>
+  <div class="selection-bar"><div class="selection-details"><span class="selection-kicker">YOUR SELECTION</span><strong data-selection-label>No seats selected</strong><small data-hold-timer>Choose seats to begin</small></div><div class="selection-total"><span>ESTIMATED TOTAL</span><strong data-selection-total>₹0</strong></div><a class="button button-large is-disabled" data-continue href="{% url 'booking:payment' show.id %}" aria-disabled="true">Continue to payment <span>→</span></a></div>
+  <div class="seat-alert" data-seat-alert role="status" aria-live="polite"></div>
+</section>
+{% endblock %}

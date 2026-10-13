@@ -1,0 +1,97 @@
+{% extends "admin/base_site.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="report-page">
+  <div class="report-heading">
+    <div>
+      <p class="admin-eyebrow">BUSINESS OVERVIEW</p>
+      <h1>Sales report</h1>
+      <p class="admin-intro">Track confirmed ticket sales and see what your audience is watching.</p>
+    </div>
+    <form class="report-date-filter" method="get">
+      <label>From <input type="date" name="from" value="{{ start_date }}"></label>
+      <label>To <input type="date" name="to" value="{{ end_date }}"></label>
+      <button class="button report-filter-button" type="submit">Apply dates</button>
+    </form>
+  </div>
+
+  <section class="report-metrics" aria-label="Sales totals">
+    <article class="report-metric report-metric-primary"><span>Gross sales</span><strong>₹{{ revenue|floatformat:2|intcomma }}</strong><small>For selected dates</small></article>
+    <article class="report-metric"><span>Tickets sold</span><strong>{{ ticket_count|intcomma }}</strong><small>Confirmed seats</small></article>
+    <article class="report-metric"><span>Bookings</span><strong>{{ booking_count|intcomma }}</strong><small>Confirmed orders</small></article>
+    <article class="report-metric"><span>Average order</span><strong>₹{{ average_order|floatformat:2|intcomma }}</strong><small>Per booking</small></article>
+  </section>
+
+  <section class="report-panel sales-chart-panel">
+    <div class="report-panel-heading"><div><h2>Daily sales</h2><p>Revenue by booking date · INR</p></div><span class="report-period">{{ start_date }} — {{ end_date }}</span></div>
+    {% if has_chart_sales %}
+      <div class="sales-chart" role="img" aria-label="Daily sales chart">
+        {% for day in chart_days %}
+          <div class="sales-chart-day" title="{{ day.label }} · ₹{{ day.revenue|floatformat:2 }} · {{ day.ticket_count }} tickets">
+            <span class="sales-bar-value">{% if day.revenue %}₹{{ day.revenue|floatformat:0|intcomma }}{% else %}&nbsp;{% endif %}</span>
+            <div class="sales-bar-track"><div class="sales-bar" style="height: {{ day.bar_height }}%"></div></div>
+            <span class="sales-day-label">{{ day.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="report-empty">No confirmed ticket sales in this date range yet. The chart will appear after the first booking.</div>
+    {% endif %}
+  </section>
+
+  <section class="report-panel theatre-sales-panel">
+    <div class="report-panel-heading"><div><h2>Sales by theatre</h2><p>Confirmed tickets and revenue grouped by venue</p></div></div>
+    {% if theatre_sales %}
+      <div class="report-table-wrap"><table class="report-table">
+        <thead><tr><th>Theatre</th><th>Tickets</th><th>Bookings</th><th class="numeric">Sales</th></tr></thead>
+        <tbody>{% for theatre in theatre_sales %}<tr>
+          <td><strong>{{ theatre.show__screen__theatre__name }}</strong></td>
+          <td>{{ theatre.ticket_count|intcomma }}</td>
+          <td>{{ theatre.booking_count|intcomma }}</td>
+          <td class="numeric">₹{{ theatre.revenue|floatformat:2|intcomma }}</td>
+        </tr>{% endfor %}</tbody>
+      </table></div>
+    {% else %}<div class="report-empty">No confirmed theatre sales for these booking dates.</div>{% endif %}
+  </section>
+
+  <section class="report-panel show-sales-panel">
+    <div class="report-panel-heading"><div><h2>Sales by show</h2><p>Confirmed tickets and revenue grouped by theatre and showtime</p></div></div>
+    {% if show_sales %}
+      <div class="report-table-wrap"><table class="report-table">
+        <thead><tr><th>Theatre / screen</th><th>Movie</th><th>Showtime</th><th>Tickets</th><th>Bookings</th><th class="numeric">Sales</th></tr></thead>
+        <tbody>{% for show in show_sales %}<tr>
+          <td><strong>{{ show.show__screen__theatre__name }}</strong><small class="table-subline">{{ show.show__screen__name }}</small></td>
+          <td>{{ show.show__movie__title }}</td>
+          <td>{{ show.show__starts_at|date:"D, d M Y · h:i A" }}</td>
+          <td>{{ show.ticket_count|intcomma }}</td>
+          <td>{{ show.booking_count|intcomma }}</td>
+          <td class="numeric">₹{{ show.revenue|floatformat:2|intcomma }}</td>
+        </tr>{% endfor %}</tbody>
+      </table></div>
+    {% else %}<div class="report-empty">No confirmed show sales for these booking dates.</div>{% endif %}
+  </section>
+
+  <div class="report-two-column">
+    <section class="report-panel">
+      <div class="report-panel-heading"><div><h2>Top movies</h2><p>Ranked by gross sales</p></div></div>
+      {% if top_movies %}
+        <div class="report-table-wrap"><table class="report-table">
+          <thead><tr><th>Movie</th><th>Tickets</th><th>Bookings</th><th class="numeric">Sales</th></tr></thead>
+          <tbody>{% for movie in top_movies %}<tr><td><strong>{{ movie.show__movie__title }}</strong></td><td>{{ movie.ticket_count|intcomma }}</td><td>{{ movie.booking_count|intcomma }}</td><td class="numeric">₹{{ movie.revenue|floatformat:2|intcomma }}</td></tr>{% endfor %}</tbody>
+        </table></div>
+      {% else %}<div class="report-empty">No movie sales to show for these dates.</div>{% endif %}
+    </section>
+
+    <section class="report-panel">
+      <div class="report-panel-heading"><div><h2>Recent bookings</h2><p>Latest confirmed orders in this period</p></div><a class="panel-text-link" href="{% url 'admin:booking_booking_changelist' %}">All bookings →</a></div>
+      {% if recent_bookings %}
+        <div class="report-table-wrap"><table class="report-table">
+          <thead><tr><th>Customer / film</th><th>Seats</th><th class="numeric">Total</th></tr></thead>
+          <tbody>{% for booking in recent_bookings %}<tr><td><strong>{{ booking.user.get_full_name|default:booking.user.username }}</strong><small class="table-subline">{{ booking.show.movie.title }} · {{ booking.booking_code }}</small></td><td>{{ booking.report_seats|default:"—" }}</td><td class="numeric">₹{{ booking.total_amount|floatformat:2|intcomma }}</td></tr>{% endfor %}</tbody>
+        </table></div>
+      {% else %}<div class="report-empty">No bookings in this date range yet.</div>{% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

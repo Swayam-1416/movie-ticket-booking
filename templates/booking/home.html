@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Cinepass · Find your next film{% endblock %}
+{% block content %}
+<section class="hero wrap">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="eyebrow-line"></span> YOUR NEXT NIGHT OUT</p>
+    <h1>Find your<br>kind of <span class="serif-accent">magic.</span></h1>
+    <p class="hero-subtitle">The lights go down. Your world opens up.<br>Find the film that takes you there.</p>
+    <div class="search-wrap" data-search-root>
+      <span class="search-symbol" aria-hidden="true">⌕</span>
+      <input id="movie-search" class="movie-search" type="search" autocomplete="off" placeholder="Search movies, genres…" aria-label="Search movies" aria-expanded="false" aria-controls="search-suggestions">
+      <span class="search-shortcut">↵</span>
+      <div id="search-suggestions" class="suggestions" role="listbox"></div>
+    </div>
+    <div class="hero-meta"><span><i class="live-dot"></i> NOW SHOWING</span><span class="meta-divider"></span><span>ONE THEATRE. ALL THE STORIES.</span></div>
+  </div>
+  <div class="hero-art" data-movie-carousel aria-label="Currently showing movies">
+    <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+    {% for movie in movies %}<a class="hero-poster hero-movie-slide{% if forloop.first %} is-active{% endif %}" href="{% url 'booking:movie_detail' movie.slug %}" data-rating="{{ movie.rating|default_if_none:''|floatformat:1 }}" aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}" style="--poster-accent: {{ movie.accent }}">
+      {% if movie.poster_image %}<img class="hero-poster-img" src="{{ movie.poster_image.url }}" alt="">{% elif movie.poster_url %}<img class="hero-poster-img" src="{{ movie.poster_url }}" alt="">{% endif %}
+      <span class="poster-small">NOW SHOWING · {{ movie.certificate }}</span><span class="poster-title">{{ movie.title }}</span><span class="poster-caption">{{ movie.genre }}</span>
+    </a>{% empty %}<div class="hero-poster hero-poster-empty"><span class="poster-small">CINEPASS CINEMA</span><span class="poster-title">Movies<br>coming soon</span><span class="poster-caption">Check back for the next show</span></div>{% endfor %}
+    <div class="floating-chip chip-rating"><span class="star">★</span> <span data-carousel-rating>{% if movies.0.rating %}{{ movies.0.rating|floatformat:1 }} / 10{% else %}NOW SHOWING{% endif %}</span></div>
+    <div class="floating-chip chip-ticket">Your seat awaits</div>
+    <span class="art-spark spark-a">✳</span>
+    {% if movies|length > 1 %}<div class="carousel-dots" aria-label="Choose featured movie">{% for movie in movies %}<button type="button" class="carousel-dot{% if forloop.first %} is-active{% endif %}" data-carousel-target="{{ forloop.counter0 }}" aria-label="Show {{ movie.title }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"></button>{% endfor %}</div>{% endif %}
+  </div>
+</section>
+
+<section class="section wrap" id="now-showing">
+  <div class="section-heading"><div><p class="eyebrow">CURATED FOR YOUR SCREEN</p><h2>Now showing<span class="brand-dot">.</span></h2></div><span class="section-count">{{ movies|length }} FILMS</span></div>
+  <div class="movie-grid">
+    {% for movie in movies %}
+      <a class="movie-card" href="{% url 'booking:movie_detail' movie.slug %}" style="--accent: {{ movie.accent }}; --poster-index: {{ forloop.counter }}">
+        <div class="movie-poster">
+          {% if movie.poster_image %}<img src="{{ movie.poster_image.url }}" alt="{{ movie.title }} poster" loading="lazy">{% elif movie.poster_url %}<img src="{{ movie.poster_url }}" alt="{{ movie.title }} poster" loading="lazy">{% else %}<div class="poster-art"><span class="poster-topline">CINEPASS PRESENTS</span><span class="poster-art-title">{{ movie.title }}</span><span class="poster-art-bottom">{{ movie.genre|upper }}</span></div>{% endif %}
+          <span class="poster-certificate">{{ movie.certificate }}</span><span class="poster-arrow">↗</span>
+        </div>
+        <div class="movie-card-info"><div><h3>{{ movie.title }}</h3><p>{{ movie.genre }}</p></div><span class="runtime">{{ movie.duration_minutes }} min</span></div>
+      </a>
+    {% empty %}<div class="empty-state"><h3>The next feature is on its way.</h3><p>Add movies from the admin panel to start your programme.</p></div>{% endfor %}
+  </div>
+</section>
+
+{% endblock %}

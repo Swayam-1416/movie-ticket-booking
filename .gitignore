@@ -1,0 +1,19 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local databases and uploads
+db.sqlite3
+media/
+
+# Generated Django files
+staticfiles/
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log

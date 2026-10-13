@@ -1,0 +1,30 @@
+<article class="booking-history-card">
+  <header class="history-card-header">
+    <div class="history-card-identity"><span>BOOKING {{ booking_number }}</span><strong>{{ booking.booking_code }}</strong></div>
+    {% if upcoming %}<span class="history-status history-status-upcoming">Upcoming screening</span>{% else %}<span class="history-status history-status-past">Past screening</span>{% endif %}
+  </header>
+  <div class="history-poster">
+    {% if booking.show.movie.poster_image %}
+      <img src="{{ booking.show.movie.poster_image.url }}" width="112" height="160" alt="{{ booking.show.movie.title }} poster" loading="lazy">
+    {% elif booking.show.movie.poster_url %}
+      <img src="{{ booking.show.movie.poster_url }}" width="112" height="160" alt="{{ booking.show.movie.title }} poster" loading="lazy">
+    {% else %}
+      <div class="poster-art" style="--accent: {{ booking.show.movie.accent }}"><span class="poster-topline">CINEPASS PRESENTS</span><strong class="poster-art-title">{{ booking.show.movie.title }}</strong><span class="poster-art-bottom">{{ booking.show.movie.genre }}</span></div>
+    {% endif %}
+  </div>
+  <div class="history-card-content">
+    <span class="history-booked-at">Booked {{ booking.booked_at|date:"j M Y" }}</span>
+    <p class="history-movie-meta">{{ booking.show.movie.genre }} · {{ booking.show.movie.certificate }}</p>
+    <h3>{{ booking.show.movie.title }}</h3>
+    <div class="history-facts">
+      <div><span>SHOWTIME</span><strong>{{ booking.show.starts_at|date:"D, j M · g:i A" }}</strong></div>
+      <div><span>THEATRE</span><strong>{{ booking.show.screen.theatre.name }} · {{ booking.show.screen.name }}</strong></div>
+      <div><span>SEATS</span><div class="history-seat-list">{% for item in booking.booking_seats.all %}<span>{{ item.seat.label }}</span>{% empty %}<span>—</span>{% endfor %}</div></div>
+    </div>
+    <div class="history-card-footer">
+      <span class="history-payment-label">TOTAL PAID</span>
+      <strong class="history-total">₹{{ booking.total_amount|floatformat:2 }}</strong>
+      <a class="button button-small history-ticket-button" href="{% url 'booking:ticket' booking.booking_code %}">View ticket <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</article>

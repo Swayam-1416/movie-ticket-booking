@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Choose a theatre · {{ movie.title }} · Cinepass{% endblock %}
+{% block content %}
+<section class="wrap flow-page">
+  <a class="back-link" href="{% url 'booking:movie_detail' movie.slug %}">← <span>{{ movie.title }}</span></a>
+  <div class="flow-heading"><p class="eyebrow">YOUR MOVIE NIGHT</p><h1>Choose a <span class="serif-accent">showtime.</span></h1><p>Select a theatre and a time that works for you.</p></div>
+  <div class="stepper"><span class="step done"><b>1</b> Movie</span><i></i><span class="step active"><b>2</b> Showtime</span><i></i><span class="step"><b>3</b> Seats</span><i></i><span class="step"><b>4</b> Payment</span></div>
+  {% for venue in venues %}<article class="theatre-card"><div class="venue-head"><div class="venue-icon">⌂</div><div><h2>{{ venue.theatre.name }}</h2><p>{{ venue.theatre.address }}, {{ venue.theatre.city }}</p></div><span class="venue-tag">CINEPASS PICK</span></div><div class="showtime-grid">{% for show in venue.shows %}<a class="showtime-card" href="{% url 'booking:seats' show.id %}"><span class="showtime-date">{{ show.starts_at|date:"D, d M" }}</span><strong>{{ show.starts_at|date:"g:i A" }}</strong><span>{{ show.screen.name }} · from ₹{{ show.standard_price|floatformat:0 }}</span><i>→</i></a>{% empty %}<p class="muted-copy">No upcoming showtimes at this theatre.</p>{% endfor %}</div></article>{% empty %}<div class="empty-state"><h3>No showtimes available yet.</h3><p>Please check again soon.</p></div>{% endfor %}
+</section>
+{% endblock %}

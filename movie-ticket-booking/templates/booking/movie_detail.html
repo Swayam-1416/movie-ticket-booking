@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }} · Cinepass{% endblock %}
+{% block content %}
+<section class="detail-hero wrap" style="--accent: {{ movie.accent }}">
+  <a class="back-link" href="{% url 'booking:home' %}">← <span>All movies</span></a>
+  <div class="detail-layout">
+    <div class="detail-poster">{% if movie.poster_image %}<img src="{{ movie.poster_image.url }}" alt="{{ movie.title }} poster">{% elif movie.poster_url %}<img src="{{ movie.poster_url }}" alt="{{ movie.title }} poster">{% else %}<div class="poster-art detail-art"><span class="poster-topline">CINEPASS PRESENTS</span><span class="poster-art-title">{{ movie.title }}</span><span class="poster-art-bottom">{{ movie.genre|upper }}</span></div>{% endif %}</div>
+    <div class="detail-copy"><p class="eyebrow">NOW SHOWING · {{ movie.language|upper }}</p><h1>{{ movie.title }}</h1><div class="detail-tags"><span>{{ movie.certificate }}</span><span>{{ movie.genre }}</span><span>{{ movie.duration_minutes }} min</span></div><p class="detail-synopsis">{{ movie.synopsis }}</p>
+      <a class="button button-large" href="{% url 'booking:theatres' movie.slug %}">Book tickets <span aria-hidden="true">↗</span></a>
+      <div class="detail-divider"></div><div class="detail-note"><span class="detail-note-icon">✦</span><span>Playing at <strong>Aurora Cinemas</strong><br>Riverside Road · Mumbai</span></div>
+    </div>
+  </div>
+</section>
+<section class="section wrap show-preview"><div class="section-heading"><div><p class="eyebrow">PLAN YOUR EVENING</p><h2>Upcoming shows<span class="brand-dot">.</span></h2></div><a class="quiet-link" href="{% url 'booking:theatres' movie.slug %}">View all showtimes ↗</a></div>
+  {% if shows %}<div class="show-preview-list">{% for show in shows|slice:":4" %}<div class="show-preview-item"><div><strong>{{ show.starts_at|date:"D, d M" }}</strong><span>{{ show.screen.theatre.name }} · {{ show.screen.name }}</span></div><span class="preview-time">{{ show.starts_at|date:"g:i A" }}</span><a class="button button-small" href="{% url 'booking:seats' show.id %}">Choose seats</a></div>{% endfor %}</div>{% else %}<p class="muted-copy">New showtimes are being added. Check back soon.</p>{% endif %}
+</section>
+{% endblock %}

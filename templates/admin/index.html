@@ -1,0 +1,68 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="admin-dashboard">
+  <header class="dashboard-heading">
+    <div>
+      <p class="admin-eyebrow">CINEPASS · ADMIN WORKSPACE</p>
+      <h1>Welcome back.</h1>
+      <p class="admin-intro">Everything you need to run your cinema, in one place.</p>
+    </div>
+    <span class="dashboard-date">{% now "l, j F Y" %}</span>
+  </header>
+
+  <div class="dashboard-layout">
+    <main class="dashboard-main">
+      <section class="dashboard-sales-card">
+        <div class="dashboard-sales-orbit" aria-hidden="true"></div>
+        <div class="dashboard-sales-copy">
+          <p class="dashboard-card-eyebrow">SALES &amp; PERFORMANCE</p>
+          <h2>See how every screening performs.</h2>
+          <p>Review ticket sales, revenue, popular movies, and recent bookings across any date range.</p>
+          <a class="dashboard-sales-button" href="{% url 'admin:sales_report' %}">Open sales report <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="dashboard-sales-mark" aria-hidden="true">₹</div>
+      </section>
+
+      <section class="workspace-section">
+        <div class="workspace-section-heading">
+          <div><p class="admin-eyebrow">YOUR CINEMA</p><h2>Manage your workspace</h2></div>
+          <span>Catalogue &amp; operations</span>
+        </div>
+        <div class="admin-app-list" id="content-main">
+          {% if app_list %}
+            {% for app in app_list %}
+              {% include "admin/app_list.html" with app=app show_changelinks=True %}
+            {% endfor %}
+          {% else %}
+            <p>{% translate "You don’t have permission to view or edit anything." %}</p>
+          {% endif %}
+        </div>
+      </section>
+    </main>
+
+    <aside class="dashboard-side">
+      <section class="dashboard-side-card quick-create-card">
+        <div class="dashboard-side-heading"><div><p class="admin-eyebrow">GET STARTED</p><h2>Quick create</h2></div><span aria-hidden="true">＋</span></div>
+        <nav class="quick-create-list" aria-label="Create new cinema items">
+          <a href="{% url 'admin:booking_movie_add' %}"><span class="quick-create-icon">▣</span><span><strong>Add a movie</strong><small>Include a poster and details</small></span><b aria-hidden="true">→</b></a>
+          <a href="{% url 'admin:booking_show_add' %}"><span class="quick-create-icon">◷</span><span><strong>Schedule a show</strong><small>Set a screen, time, and price</small></span><b aria-hidden="true">→</b></a>
+          <a href="{% url 'admin:booking_theatre_add' %}"><span class="quick-create-icon">⌂</span><span><strong>Add a theatre</strong><small>Expand to another venue</small></span><b aria-hidden="true">→</b></a>
+        </nav>
+      </section>
+
+      <section class="dashboard-side-card setup-card">
+        <p class="admin-eyebrow">SCREENING CHECKLIST</p>
+        <h2>Ready for your next show?</h2>
+        <ol class="setup-steps">
+          <li><span>01</span><div><strong>Choose a movie</strong><small>Add the film and its poster.</small></div></li>
+          <li><span>02</span><div><strong>Prepare a screen</strong><small>Set up theatre, screen, and seats.</small></div></li>
+          <li><span>03</span><div><strong>Publish a showtime</strong><small>Set the time and ticket prices.</small></div></li>
+        </ol>
+        <a class="setup-link" href="{% url 'admin:booking_show_changelist' %}">Manage showtimes <span aria-hidden="true">→</span></a>
+      </section>
+    </aside>
+  </div>
+</div>
+{% endblock %}

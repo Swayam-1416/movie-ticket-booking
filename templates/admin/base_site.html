@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | Cinepass Admin{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <script>try { const theme = localStorage.getItem("cinepass-theme"); if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme; } catch (error) {}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  <script defer src="{% static 'js/admin-theme.js' %}"></script>
+{% endblock %}
+{% block branding %}
+  <div class="cinepass-brand">
+    <a href="{% url 'admin:index' %}" class="cinepass-brand-mark" aria-label="Cinepass admin home">c</a>
+    <div>
+      <a href="{% url 'admin:index' %}" class="cinepass-brand-name">cinepass<span class="brand-dot">.</span></a>
+      <span class="cinepass-brand-caption">Cinema control room</span>
+    </div>
+  </div>
+{% endblock %}
+{% block nav-global %}
+  <button class="theme-toggle admin-theme-toggle" type="button" aria-label="Switch to light theme" title="Switch theme"><span class="theme-icon" aria-hidden="true">☼</span><span class="theme-label">Light</span></button>
+  <a class="admin-report-link" href="{% url 'admin:sales_report' %}">Sales report <span aria-hidden="true">↗</span></a>
+{% endblock %}

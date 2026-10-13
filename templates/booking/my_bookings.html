@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}My bookings · Cinepass{% endblock %}
+{% block content %}
+<section class="wrap booking-history-page">
+  <header class="booking-history-heading">
+    <div>
+      <p class="eyebrow">YOUR CINEPASS ACCOUNT</p>
+      <h1>My bookings<span>.</span></h1>
+      <p>All your movie plans and tickets, together in one place.</p>
+    </div>
+    <a class="history-browse-link" href="{% url 'booking:home' %}#now-showing">Browse movies <span aria-hidden="true">↗</span></a>
+  </header>
+
+  {% if upcoming_bookings %}
+    <section class="booking-history-group">
+      <div class="booking-history-section-heading"><h2>Upcoming screenings</h2><span>{{ upcoming_bookings|length }}</span></div>
+      <div class="booking-history-list">
+        {% for booking in upcoming_bookings %}
+          {% include "booking/booking_history_card.html" with booking=booking upcoming=True booking_number=forloop.counter %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if past_bookings %}
+    <section class="booking-history-group">
+      <div class="booking-history-section-heading"><h2>Past screenings</h2><span>{{ past_bookings|length }}</span></div>
+      <div class="booking-history-list">
+        {% for booking in past_bookings %}
+          {% include "booking/booking_history_card.html" with booking=booking upcoming=False booking_number=forloop.counter %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if not upcoming_bookings and not past_bookings %}
+    <div class="booking-history-empty">
+      <span aria-hidden="true">▣</span>
+      <p class="eyebrow">YOUR SEAT IS WAITING</p>
+      <h2>No bookings yet</h2>
+      <p>When you book a movie, your tickets and show details will appear here.</p>
+      <a class="button button-small" href="{% url 'booking:home' %}#now-showing">Explore movies <span aria-hidden="true">↗</span></a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

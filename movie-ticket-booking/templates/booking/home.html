@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Cinepass · Find your next film{% endblock %}
+{% block content %}
+<section class="hero wrap">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="eyebrow-line"></span> YOUR NEXT NIGHT OUT</p>
+    <h1>Find your<br>kind of <span class="serif-accent">magic.</span></h1>
+    <p class="hero-subtitle">The lights go down. Your world opens up.<br>Find the film that takes you there.</p>
+    <div class="search-wrap" data-search-root>
+      <span class="search-symbol" aria-hidden="true">⌕</span>
+      <input id="movie-search" class="movie-search" type="search" autocomplete="off" placeholder="Search movies, genres…" aria-label="Search movies" aria-expanded="false" aria-controls="search-suggestions">
+      <span class="search-shortcut">↵</span>
+      <div id="search-suggestions" class="suggestions" role="listbox"></div>
+    </div>
+    <div class="hero-meta"><span><i class="live-dot"></i> NOW SHOWING</span><span class="meta-divider"></span><span>ONE THEATRE. ALL THE STORIES.</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+    <div class="hero-poster poster-main"><div class="poster-glow"></div><span class="poster-small">A CINEPASS ORIGINAL</span><span class="poster-title">AFTER<br>THE<br>GOLDEN<br>HOUR</span><span class="poster-caption">A story written in light</span></div>
+    <div class="floating-chip chip-rating"><span class="star">★</span> 4.9 <span class="chip-muted">/ 5</span></div>
+    <div class="floating-chip chip-ticket"><span>✦</span> Your seat awaits</div>
+    <span class="art-spark spark-a">✳</span><span class="art-spark spark-b">✦</span>
+  </div>
+</section>
+
+<section class="section wrap" id="now-showing">
+  <div class="section-heading"><div><p class="eyebrow">CURATED FOR YOUR SCREEN</p><h2>Now showing<span class="brand-dot">.</span></h2></div><span class="section-count">{{ movies|length }} FILMS</span></div>
+  <div class="movie-grid">
+    {% for movie in movies %}
+      <a class="movie-card" href="{% url 'booking:movie_detail' movie.slug %}" style="--accent: {{ movie.accent }}; --poster-index: {{ forloop.counter }}">
+        <div class="movie-poster">
+          {% if movie.poster_image %}<img src="{{ movie.poster_image.url }}" alt="{{ movie.title }} poster" loading="lazy">{% elif movie.poster_url %}<img src="{{ movie.poster_url }}" alt="{{ movie.title }} poster" loading="lazy">{% else %}<div class="poster-art"><span class="poster-topline">CINEPASS PRESENTS</span><span class="poster-art-title">{{ movie.title }}</span><span class="poster-art-bottom">{{ movie.genre|upper }}</span></div>{% endif %}
+          <span class="poster-certificate">{{ movie.certificate }}</span><span class="poster-arrow">↗</span>
+        </div>
+        <div class="movie-card-info"><div><h3>{{ movie.title }}</h3><p>{{ movie.genre }}</p></div><span class="runtime">{{ movie.duration_minutes }} min</span></div>
+      </a>
+    {% empty %}<div class="empty-state"><span>✦</span><h3>The next feature is on its way.</h3><p>Add movies from the admin panel to start your programme.</p></div>{% endfor %}
+  </div>
+</section>
+
+<section class="experience-band" id="experience"><div class="wrap experience-inner"><div><p class="eyebrow">A LITTLE MORE CINEMA</p><h2>Made for the<br><span class="serif-accent">feeling.</span></h2></div><p>Thoughtful seats. Beautiful sound. Stories worth sharing. Pick a film, find your place, and let the evening take shape.</p><a class="round-link" href="#now-showing" aria-label="See now showing films">↓</a></div></section>
+{% endblock %}
