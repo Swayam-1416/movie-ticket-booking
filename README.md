@@ -35,7 +35,7 @@ The data model supports multiple theatres. The demo seed command creates one the
 ### 1. Clone the repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/Swayam-1416/movie-ticket-booking.git
 cd movie-ticket-booking
 ```
 
